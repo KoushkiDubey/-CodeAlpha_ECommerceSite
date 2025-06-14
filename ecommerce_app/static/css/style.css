@@ -1,0 +1,113 @@
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+/* In your style.css */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+.rupee-symbol:before {
+    content: "₹";
+    margin-right: 2px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    z-index: 1000;
+}
+/* Featured Products Styling */
+.featured-products .card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.featured-products .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-color: #ffc107;
+}
+
+.featured-badge {
+    font-size: 0.8rem;
+    z-index: 10;
+}
+
+/* Make featured products slightly larger */
+@media (min-width: 768px) {
+    .featured-products .card {
+        min-height: 380px;
+    }
+}
+
+/* Product card styles */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Cart styles */
+.cart-product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+/* Form styles */
+.form-control, .form-select {
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 10px 20px;
+}
+
+/* Navbar styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* Ensure navbar stays horizontal */
+.navbar-nav {
+    flex-direction: row;
+}
+
+/* Space between nav items */
+.nav-item {
+    margin: 0 0.5rem;
+}
+
+/* Mobile menu styles */
+@media (max-width: 767.98px) {
+    .navbar-collapse {
+        padding-top: 1rem;
+    }
+    .navbar-nav {
+        flex-direction: column;
+    }
+}
+/* Footer styles */
+footer {
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-image {
+        height: 150px;
+    }
+}

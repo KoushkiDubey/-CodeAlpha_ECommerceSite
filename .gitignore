@@ -1,0 +1,32 @@
+# Django
+*.sqlite3
+db.sqlite3
+__pycache__/
+*.py[cod]
+migrations/
+
+# Environment
+.env
+.env.local
+.secrets
+
+# Static/Media
+/staticfiles/
+/media/
+/static/
+
+# IDE (IntelliJ)
+.idea/
+*.iml
+*.iws
+/shelf/
+/workspace.xml
+
+# Virtual Env
+venv/
+env/
+ENV/
+
+# System
+.DS_Store
+Thumbs.db

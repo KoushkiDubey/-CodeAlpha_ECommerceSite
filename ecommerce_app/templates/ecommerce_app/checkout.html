@@ -1,0 +1,67 @@
+{% extends 'ecommerce_app/base.html' %}
+
+{% block title %}Checkout - E-Shop{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Checkout</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="id_shipping_address" class="form-label">Shipping Address</label>
+                        {{ form.shipping_address }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    {% for value, name in form.fields.payment_method.choices %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment_method" id="payment_{{ value }}" value="{{ value }}" {% if forloop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="payment_{{ value }}">
+                            {{ name }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">Place Order</button>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in cart.cartitem_set.all %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                        <span>${{ item.total_price }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between fw-bold">
+                        <span>Total</span>
+                        <span>${{ cart.total_price }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
