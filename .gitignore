@@ -11,9 +11,9 @@ migrations/
 .secrets
 
 # Static/Media
-/staticfiles/
-/media/
-/static/
+/media/*
+!/media/products/
+!/media/products/*.jpg
 
 # IDE (IntelliJ)
 .idea/
