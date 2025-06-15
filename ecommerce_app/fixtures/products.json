@@ -1,0 +1,47 @@
+[
+  {
+    "model": "ecommerce_app.product",
+    "pk": 1,
+    "fields": {
+      "name": "Wireless Headphones",
+      "description": "Premium noise-cancelling Bluetooth headphones",
+      "price": "99.99",
+      "image": "products/headphones.jpg",
+      "category": 1,
+      "stock": 50,
+      "created_at": "2024-06-15T10:00:00Z",
+      "featured": true,
+      "featured_until": "2024-12-31"
+    }
+  },
+  {
+    "model": "ecommerce_app.product",
+    "pk": 2,
+    "fields": {
+      "name": "Cotton T-Shirt",
+      "description": "100% organic cotton unisex tee",
+      "price": "19.99",
+      "image": "products/tshirt.jpg",
+      "category": 2,
+      "stock": 100,
+      "created_at": "2024-06-10T09:30:00Z",
+      "featured": false,
+      "featured_until": null
+    }
+  },
+  {
+    "model": "ecommerce_app.product",
+    "pk": 3,
+    "fields": {
+      "name": "Smart Coffee Maker",
+      "description": "Programmable Wi-Fi enabled coffee machine",
+      "price": "129.95",
+      "image": "products/coffeemaker.jpg",
+      "category": 3,
+      "stock": 25,
+      "created_at": "2024-06-01T14:15:00Z",
+      "featured": true,
+      "featured_until": "2024-07-31"
+    }
+  }
+]

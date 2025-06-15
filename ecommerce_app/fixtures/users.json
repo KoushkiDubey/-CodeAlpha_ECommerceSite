@@ -1,0 +1,17 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "codealpha",
+      "email": "review@codealpha.com",
+      "password": "pbkdf2_sha256$600000$HASHED_PASSWORD$YOUR_HASH",
+      "is_staff": true,
+      "is_active": true,
+      "is_superuser": true,
+      "first_name": "CodeAlpha",
+      "last_name": "Reviewer",
+      "date_joined": "2024-06-15T00:00:00Z"
+    }
+  }
+]

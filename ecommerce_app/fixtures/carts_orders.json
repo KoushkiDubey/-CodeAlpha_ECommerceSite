@@ -1,0 +1,41 @@
+[
+  {
+    "model": "ecommerce_app.cart",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-06-15T11:00:00Z",
+      "is_active": true,
+      "user": 1
+    }
+  },
+  {
+    "model": "ecommerce_app.cartitem",
+    "pk": 1,
+    "fields": {
+      "quantity": 2,
+      "cart": 1,
+      "product": 1
+    }
+  },
+  {
+    "model": "ecommerce_app.cartitem",
+    "pk": 2,
+    "fields": {
+      "quantity": 1,
+      "cart": 1,
+      "product": 3
+    }
+  },
+  {
+    "model": "ecommerce_app.order",
+    "pk": 1,
+    "fields": {
+      "shipping_address": "123 Main St, Tech City, TC 10001",
+      "payment_method": "Credit Card",
+      "created_at": "2024-06-15T11:30:00Z",
+      "status": "Completed",
+      "cart": 1,
+      "user": 1
+    }
+  }
+]

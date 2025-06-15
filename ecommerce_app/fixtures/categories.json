@@ -1,0 +1,23 @@
+[
+  {
+    "model": "ecommerce_app.category",
+    "pk": 1,
+    "fields": {
+      "name": "Electronics"
+    }
+  },
+  {
+    "model": "ecommerce_app.category",
+    "pk": 2,
+    "fields": {
+      "name": "Clothing"
+    }
+  },
+  {
+    "model": "ecommerce_app.category",
+    "pk": 3,
+    "fields": {
+      "name": "Home & Kitchen"
+    }
+  }
+]
