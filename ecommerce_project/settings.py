@@ -24,9 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m9w%^%wnx!felqae!k%mxk2f$)v+^jgu_t=5g2xwh=bv*i)9pn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Application definition
@@ -61,20 +62,7 @@ SESSION_SAVE_EVERY_REQUEST = True  # Keeps session alive on activity
 
 ROOT_URLCONF = 'ecommerce_project.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
@@ -137,16 +125,17 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),           # Project-wide templates
-            os.path.join(BASE_DIR, 'ecommerce_app/templates'), # App-specific templates
+            os.path.join(BASE_DIR, 'templates'),            # Project-wide templates
+            os.path.join(BASE_DIR, 'ecommerce_app/templates'),  # App-specific templates
         ],
         'APP_DIRS': True,
-        'OPTIONS': {  # ✅ Add the missing `OPTIONS` section
+        'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',  # Add this for media files!
             ],
         },
     },
