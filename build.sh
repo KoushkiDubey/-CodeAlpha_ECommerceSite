@@ -1,39 +1,33 @@
 #!/bin/bash
-set -o errexit
+set -o errexit  # Exit immediately if any command fails
 
-#!/bin/bash
-set -o errexit
-
-# 1. Clean environment and force Django reinstallation
-#!/bin/bash
-set -o errexit
-
-# 1. System dependencies for Pillow (without sudo)
-apt-get update && \
+# System dependencies for Pillow (Render's environment allows apt-get)
+echo "---- Installing system dependencies ----"
+apt-get update -qq && \
 apt-get install -y --no-install-recommends \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
-    libwebp-dev || true
+    libwebp-dev > /dev/null 2>&1 || true
 
-# 2. Install Python packages in correct order
+# Python package installation
+echo "---- Installing Python packages ----"
 pip install --upgrade pip setuptools wheel
-pip install Django==4.2.11
-pip install gunicorn==20.1.0
-pip install psycopg2-binary==2.9.9
-pip install whitenoise==6.6.0
-pip install dj-database-url==2.1.0
+pip install -r requirements.txt  # Recommended over individual installs
 
-# 3. Install Pillow with workaround
+# Specific package workarounds
+echo "---- Installing Pillow with workaround ----"
 pip install --pre pillow==9.5.0 --no-build-isolation
 
-# 4. Database setup
-python manage.py makemigrations
-python manage.py migrate
+# Database setup
+echo "---- Running database migrations ----"
+python manage.py makemigrations --noinput
+python manage.py migrate --noinput
 
-# 5. Static files
+# Static files
+echo "---- Collecting static files ----"
 python manage.py collectstatic --noinput
 
-# 6. Verification
-echo "===== PILLOW INSTALLED SUCCESSFULLY ====="
+# Verification
+echo "===== BUILD COMPLETED SUCCESSFULLY ====="
 python -c "from PIL import Image; print(f'Pillow version: {Image.__version__}')"
