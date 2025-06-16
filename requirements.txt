@@ -1,5 +1,5 @@
 Django==4.2
-Pillow==9.5.0
+Pillow==9..5.0
 Django==4.2.11  # LTS version
 gunicorn
 whitenoise
