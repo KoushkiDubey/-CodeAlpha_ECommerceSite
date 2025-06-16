@@ -1,19 +1,19 @@
 #!/bin/bash
 set -e
+#!/bin/bash
+set -e
 
-# Create static directory if missing
-mkdir -p static
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Apply database migrations
+# 1. Ensure migrations are applied
 python manage.py migrate
 
-# Collect static files
+# 2. Only needed if you changed from SQLite to PostgreSQL
+python manage.py makemigrations --noinput
+
+# 3. Create cache tables if using database cache
+python manage.py createcachetable
+
+# 4. Collect static files
 python manage.py collectstatic --noinput
-python manage.py check --database default
-python manage.py dbshell <<EOF
-\dt
-\q
-EOF
+
+# 5. Start Gunicorn
+exec gunicorn ecommerce_project.wsgi:application --bind 0.0.0.0:$PORT

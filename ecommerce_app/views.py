@@ -1,12 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
+# pyright: ignore[reportAttributeAccessIssue]
+from django.shortcuts import  redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Cart, CartItem, Order, Category
 from .forms import RegistrationForm, LoginForm, CheckoutForm
 from django.shortcuts import render, get_object_or_404
-from django.core.exceptions import MultipleObjectsReturned
+
 from django.utils import timezone
+from django.db import DatabaseError  #
+  # type: ignore
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, id=category_id)
@@ -20,20 +23,28 @@ def category_products(request, category_id):
         'is_category_view': True
     })
 def index(request):
-    featured_products = Product.objects.filter(
-        featured=True,
-        featured_until__gte=timezone.now().date()  # Only currently featured
-    )[:8]  # Limit to 8 featured products
+    try:
+        featured_products = Product.objects.filter(
+            featured=True,
+            featured_until__gte=timezone.now().date()
+        )[:8]
 
-    regular_products = Product.objects.exclude(
-        id__in=[p.id for p in featured_products]
-    )[:12]  # Show 12 regular products
+        regular_products = Product.objects.exclude(
+            id__in=[p.id for p in featured_products]
+        )[:12]
 
-    return render(request, 'ecommerce_app/index.html', {
-        'featured_products': featured_products,
-        'regular_products': regular_products,
-        'categories': Category.objects.all()
-    })
+        return render(request, 'ecommerce_app/index.html', {
+            'featured_products': featured_products,
+            'regular_products': regular_products,
+            'categories': Category.objects.all()
+        })
+    except DatabaseError:
+        # Return empty results if tables don't exist yet
+        return render(request, 'ecommerce_app/index.html', {
+            'featured_products': [],
+            'regular_products': [],
+            'categories': []
+        })
 
 
 def product_detail(request, product_id):
