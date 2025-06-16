@@ -1,12 +1,10 @@
 #!/bin/bash
-set -e  # Exit on error
+set -e
 
-# Pillow dependencies
-apt-get update && apt-get install -y \
-    python3-dev \
-    libjpeg-dev \
-    zlib1g-dev
+# Clean install without dependency conflicts
+pip install --upgrade pip
+pip install --no-cache-dir -r requirements.txt
 
-pip install -r requirements.txt
+# Django setup
 python manage.py collectstatic --noinput
 python manage.py migrate
