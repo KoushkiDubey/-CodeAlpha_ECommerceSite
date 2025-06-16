@@ -1,19 +1,16 @@
 #!/bin/bash
-set -e
-#!/bin/bash
-set -e
+# Exit on errors
+set -o errexit
 
-# 1. Ensure migrations are applied
-python manage.py migrate
+# Install Python dependencies
+pip install Django==4.2.11
+pip install gunicorn==20.1.0
+pip install psycopg2-binary==2.9.9
+pip install whitenoise==6.6.0
+pip install dj-database-url==2.1.0
 
-# 2. Only needed if you changed from SQLite to PostgreSQL
-python manage.py makemigrations --noinput
-
-# 3. Create cache tables if using database cache
-python manage.py createcachetable
-
-# 4. Collect static files
+# Collect static files
 python manage.py collectstatic --noinput
 
-# 5. Start Gunicorn
-exec gunicorn ecommerce_project.wsgi:application --bind 0.0.0.0:$PORT
+# Apply database migrations
+python manage.py migrate --noinput
