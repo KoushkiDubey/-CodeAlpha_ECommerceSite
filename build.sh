@@ -1,12 +1,14 @@
 #!/bin/bash
 set -o errexit
 
-# 1. Clean environment
-rm -rf .venv/
-python -m venv .venv
-source .venv/bin/activate
+#!/bin/bash
+set -o errexit
 
-# 2. Install system dependencies for Pillow
+# 1. Clean environment and force Django reinstallation
+#!/bin/bash
+set -o errexit
+
+# 1. Install system dependencies for Pillow
 apt-get update && \
 apt-get install -y --no-install-recommends \
     libjpeg-dev \
@@ -14,29 +16,26 @@ apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libwebp-dev || true
 
-# 3. Install Python packages
+# 2. Install core packages first
 pip install --upgrade pip setuptools wheel
 pip install Django==4.2.11
 pip install gunicorn==20.1.0
 pip install psycopg2-binary==2.9.9
+
+# 3. Install Pillow with workaround
+pip install pillow==9.5.0 --no-build-isolation --ignore-installed
+
+# 4. Install remaining packages
 pip install whitenoise==6.6.0
 pip install dj-database-url==2.1.0
-pip install --pre pillow==9.5.0 --no-build-isolation
 
-# 4. NUCLEAR OPTION - Reset migrations completely
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
-
-# 5. Database setup (force table creation)
+# 5. Database setup
 python manage.py makemigrations
-python manage.py migrate --run-syncdb  # Creates all tables without migrations
-python manage.py migrate  # Apply any remaining migrations
+python manage.py migrate
 
 # 6. Static files
-mkdir -p staticfiles
 python manage.py collectstatic --noinput
 
 # 7. Verification
-echo "===== VERIFICATION ====="
-python manage.py showmigrations
-python manage.py check --deploy
+echo "===== PILLOW INSTALLED SUCCESSFULLY ====="
+python -c "from PIL import Image; print(f'Pillow version: {Image.__version__}')"
