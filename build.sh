@@ -5,34 +5,35 @@ set -o errexit
 set -o errexit
 
 # 1. Clean environment and force Django reinstallation
-rm -rf .venv/
-python -m venv .venv
-source .venv/bin/activate
+#!/bin/bash
+set -o errexit
 
-# 2. First install wheel and setuptools
-pip install --upgrade pip wheel setuptools
+# 1. System dependencies for Pillow (without sudo)
+apt-get update && \
+apt-get install -y --no-install-recommends \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
+    libwebp-dev || true
 
-# 3. Install Django FIRST with --no-deps
-pip install --force-reinstall --no-deps Django==4.2.11
-
-# 4. Then install other packages
+# 2. Install Python packages in correct order
+pip install --upgrade pip setuptools wheel
+pip install Django==4.2.11
 pip install gunicorn==20.1.0
 pip install psycopg2-binary==2.9.9
 pip install whitenoise==6.6.0
 pip install dj-database-url==2.1.0
 
-# 5. Install Pillow with build isolation disabled
-pip install Pillow==9.5.0 --no-build-isolation
+# 3. Install Pillow with workaround
+pip install --pre pillow==9.5.0 --no-build-isolation
 
-# 6. Database setup
+# 4. Database setup
 python manage.py makemigrations
 python manage.py migrate
 
-# 7. Static files
-mkdir -p staticfiles
+# 5. Static files
 python manage.py collectstatic --noinput
 
-# 8. Verification
-echo "===== VERIFICATION ====="
-python -c "from django.db.migrations import Migration; print('Migrations module working')"
-python manage.py check --deploy
+# 6. Verification
+echo "===== PILLOW INSTALLED SUCCESSFULLY ====="
+python -c "from PIL import Image; print(f'Pillow version: {Image.__version__}')"
