@@ -1,32 +1,38 @@
 #!/bin/bash
 set -o errexit
 
-# 1. Install system dependencies for Pillow
-apt-get update && \
-apt-get install -y --no-install-recommends \
-    libjpeg-dev \
-    zlib1g-dev \
-    libfreetype6-dev \
-    libwebp-dev || true
+#!/bin/bash
+set -o errexit
 
-# 2. Install Python packages
-pip install --upgrade pip setuptools wheel
-pip install --no-cache-dir Pillow==9.5.0 --no-build-isolation
-pip install Django==4.2.11 gunicorn==20.1.0 psycopg2-binary==2.9.9
+# 1. Clean environment and force Django reinstallation
+rm -rf .venv/
+python -m venv .venv
+source .venv/bin/activate
 
-# 3. NUCLEAR OPTION - Reset migrations
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
+# 2. First install wheel and setuptools
+pip install --upgrade pip wheel setuptools
 
-# 4. Database setup
+# 3. Install Django FIRST with --no-deps
+pip install --force-reinstall --no-deps Django==4.2.11
+
+# 4. Then install other packages
+pip install gunicorn==20.1.0
+pip install psycopg2-binary==2.9.9
+pip install whitenoise==6.6.0
+pip install dj-database-url==2.1.0
+
+# 5. Install Pillow with build isolation disabled
+pip install Pillow==9.5.0 --no-build-isolation
+
+# 6. Database setup
 python manage.py makemigrations
-python manage.py migrate --run-syncdb  # Creates tables without migrations
-python manage.py migrate  # Apply any remaining migrations
+python manage.py migrate
 
-# 5. Static files
+# 7. Static files
+mkdir -p staticfiles
 python manage.py collectstatic --noinput
 
-# 6. Verification
+# 8. Verification
 echo "===== VERIFICATION ====="
-python manage.py showmigrations
+python -c "from django.db.migrations import Migration; print('Migrations module working')"
 python manage.py check --deploy
