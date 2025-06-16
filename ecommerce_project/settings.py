@@ -106,20 +106,7 @@ LOGOUT_REDIRECT_URL = 'index'
 SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 SESSION_SAVE_EVERY_REQUEST = True
 # TEMPORARY DEBUG SETTINGS - REMOVE AFTER FIXING
-DEBUG = True  # Override environment variable
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
+
 
 # Templates
 TEMPLATES = [

@@ -1,4 +1,3 @@
-# pyright: ignore[reportAttributeAccessIssue]
 from django.shortcuts import  redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -8,8 +7,7 @@ from .forms import RegistrationForm, LoginForm, CheckoutForm
 from django.shortcuts import render, get_object_or_404
 
 from django.utils import timezone
-from django.db import DatabaseError  #
-  # type: ignore
+
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, id=category_id)
@@ -23,28 +21,21 @@ def category_products(request, category_id):
         'is_category_view': True
     })
 def index(request):
-    try:
-        featured_products = Product.objects.filter(
-            featured=True,
-            featured_until__gte=timezone.now().date()
-        )[:8]
+    featured_products = Product.objects.filter(
+        featured=True,
+        featured_until__gte=timezone.now().date()  # Only currently featured
+    )[:8]  # Limit to 8 featured products
 
-        regular_products = Product.objects.exclude(
-            id__in=[p.id for p in featured_products]
-        )[:12]
+    regular_products = Product.objects.exclude(
+        id__in=[p.id for p in featured_products]
+    )[:12]  # Show 12 regular products
 
-        return render(request, 'ecommerce_app/index.html', {
-            'featured_products': featured_products,
-            'regular_products': regular_products,
-            'categories': Category.objects.all()
-        })
-    except DatabaseError:
-        # Return empty results if tables don't exist yet
-        return render(request, 'ecommerce_app/index.html', {
-            'featured_products': [],
-            'regular_products': [],
-            'categories': []
-        })
+    return render(request, 'ecommerce_app/index.html', {
+        'featured_products': featured_products,
+        'regular_products': regular_products,
+        'categories': Category.objects.all()
+    })
+
 
 
 def product_detail(request, product_id):
