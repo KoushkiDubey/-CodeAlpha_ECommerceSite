@@ -6,15 +6,13 @@ rm -rf .venv/
 python -m venv .venv
 source .venv/bin/activate
 
-# Essential system packages for Pillow
-sudo apt-get update
-sudo apt-get install -y \
+# Install system dependencies (without sudo)
+apt-get update && apt-get install -y \
     libjpeg-dev \
     zlib1g-dev \
-    libtiff-dev \
     libfreetype6-dev \
     liblcms2-dev \
-    libwebp-dev
+    libwebp-dev || true
 
 # Upgrade pip and setuptools first
 pip install --upgrade pip setuptools wheel
