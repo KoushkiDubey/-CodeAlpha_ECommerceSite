@@ -6,18 +6,28 @@ rm -rf .venv/
 python -m venv .venv
 source .venv/bin/activate
 
-# Fix pip and setuptools first
+# Essential system packages for Pillow
+sudo apt-get update
+sudo apt-get install -y \
+    libjpeg-dev \
+    zlib1g-dev \
+    libtiff-dev \
+    libfreetype6-dev \
+    liblcms2-dev \
+    libwebp-dev
+
+# Upgrade pip and setuptools first
 pip install --upgrade pip setuptools wheel
 
-# Install Django and core dependencies FIRST
+# Install Pillow with explicit build isolation disabled
+pip install Pillow==9.5.0 --no-build-isolation
+
+# Install other dependencies
 pip install Django==4.2.11
 pip install gunicorn==20.1.0
 pip install psycopg2-binary==2.9.9
-
-# Then install other packages
 pip install whitenoise==6.6.0
 pip install dj-database-url==2.1.0
-pip install Pillow==9.5.0
 
 # Database setup
 python manage.py makemigrations
