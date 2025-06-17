@@ -6,26 +6,12 @@ from .models import Product, Cart, CartItem, Order, Category
 from .forms import RegistrationForm, LoginForm, CheckoutForm
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from django.db import connection
-from django.http import HttpResponse
-
-# Database verification view (add this at the top)
-def check_db(request):
-    """Temporary view to verify database tables"""
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname='public'")
-        tables = [t[0] for t in cursor.fetchall()]
-        cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='ecommerce_app_product'")
-        columns = [c[0] for c in cursor.fetchall()] if 'ecommerce_app_product' in tables else []
-
-    return HttpResponse(
-        f"Existing tables: {tables}<br>"
-        f"Product table columns: {columns}"
-    )
+from django.conf import settings
+import os
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category)
+    products = Product.objects.filter(category=category).select_related('category')
     categories = Category.objects.all()
 
     return render(request, 'ecommerce_app/category_products.html', {
@@ -38,12 +24,12 @@ def category_products(request, category_id):
 def index(request):
     featured_products = Product.objects.filter(
         featured=True,
-        featured_until__gte=timezone.now().date()  # Only currently featured
-    )[:8]  # Limit to 8 featured products
+        featured_until__gte=timezone.now().date()
+    ).select_related('category')[:8]
 
     regular_products = Product.objects.exclude(
         id__in=[p.id for p in featured_products]
-    )[:12]  # Show 12 regular products
+    ).select_related('category')[:12]
 
     return render(request, 'ecommerce_app/index.html', {
         'featured_products': featured_products,
@@ -52,34 +38,54 @@ def index(request):
     })
 
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(Product.objects.select_related('category'), pk=product_id)
     return render(request, 'ecommerce_app/product_detail.html', {
         'product': product,
     })
-
 @login_required
 def view_cart(request):
-    cart = Cart.objects.filter(user=request.user, is_active=True).first()
-    if not cart:
-        cart = Cart.objects.create(user=request.user)
-    return render(request, 'ecommerce_app/cart.html', {'cart': cart})
+    cart = Cart.objects.filter(
+        user=request.user,
+        is_active=True
+    ).prefetch_related('items__product').first()
 
+    if not cart:
+        return render(request, 'ecommerce_app/cart.html', {'empty': True})
+
+    return render(request, 'ecommerce_app/cart.html', {
+        'cart': cart,
+        'cart_items': cart.items.all()  # Use the correct related_name
+    })
 @login_required
 def add_to_cart(request, product_id):
-    cart = Cart.objects.filter(user=request.user, is_active=True).first()
-    if not cart:
-        cart = Cart.objects.create(user=request.user)
-
-    product = get_object_or_404(Product, pk=product_id)
-    cart_item, created = CartItem.objects.get_or_create(
-        cart=cart,
-        product=product,
-        defaults={'quantity': 1}
+    # Get or create active cart (reactivates old cart if exists)
+    cart, created = Cart.objects.get_or_create(
+        user=request.user,
+        is_active=True,
+        defaults={'is_active': True}
     )
 
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
+    # If cart was inactive (from previous order), reactivate it
+    if not created and not cart.is_active:
+        cart.is_active = True
+        cart.save()
+
+    product = get_object_or_404(Product, pk=product_id)
+
+    try:
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            product=product,
+            defaults={'quantity': 1}
+        )
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        messages.success(request, f"Added {product.name} to your cart")
+    except Exception as e:
+        messages.error(request, f"Couldn't add item: {str(e)}")
 
     return redirect('view_cart')
 
@@ -117,11 +123,8 @@ def checkout(request):
                 payment_method=form.cleaned_data['payment_method'],
                 status='Processing'
             )
-
-            # Deactivate the used cart
             cart.is_active = False
             cart.save()
-
             return render(request, 'ecommerce_app/order_confirmation.html', {
                 'order': order,
             })
