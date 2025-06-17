@@ -14,7 +14,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-development-key')
 if os.environ.get('PYTHONANYWHERE_DOMAIN'):
     # Production settings (PythonAnywhere)
     DEBUG = False
-    ALLOWED_HOSTS = ['codealpha.pythonanywhere.com']
+    ALLOWED_HOSTS = ['koushki.pythonanywhere.com']
 else:
     # Local development settings
     DEBUG = True
