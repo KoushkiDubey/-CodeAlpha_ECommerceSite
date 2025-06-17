@@ -14,7 +14,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-development-key')
 if os.environ.get('PYTHONANYWHERE_DOMAIN'):
     # Production settings (PythonAnywhere)
     DEBUG = False
-    ALLOWED_HOSTS = ['koushki.pythonanywhere.com']
+    ALLOWED_HOSTS = ['codealpha-ecommercesite-3.onrender.com',  # Your Render.com URL
+                     'localhost',
+                     '127.0.0.1',]
 else:
     # Local development settings
     DEBUG = True
@@ -108,8 +110,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Your existing folder
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
