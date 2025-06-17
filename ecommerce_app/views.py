@@ -1,13 +1,27 @@
-from django.shortcuts import  redirect
+from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Product, Cart, CartItem, Order, Category
 from .forms import RegistrationForm, LoginForm, CheckoutForm
 from django.shortcuts import render, get_object_or_404
-
 from django.utils import timezone
+from django.db import connection
+from django.http import HttpResponse
 
+# Database verification view (add this at the top)
+def check_db(request):
+    """Temporary view to verify database tables"""
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname='public'")
+        tables = [t[0] for t in cursor.fetchall()]
+        cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='ecommerce_app_product'")
+        columns = [c[0] for c in cursor.fetchall()] if 'ecommerce_app_product' in tables else []
+
+    return HttpResponse(
+        f"Existing tables: {tables}<br>"
+        f"Product table columns: {columns}"
+    )
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, id=category_id)
@@ -20,6 +34,7 @@ def category_products(request, category_id):
         'current_category': category,
         'is_category_view': True
     })
+
 def index(request):
     featured_products = Product.objects.filter(
         featured=True,
@@ -36,14 +51,11 @@ def index(request):
         'categories': Category.objects.all()
     })
 
-
-
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     return render(request, 'ecommerce_app/product_detail.html', {
         'product': product,
     })
-
 
 @login_required
 def view_cart(request):
@@ -51,7 +63,7 @@ def view_cart(request):
     if not cart:
         cart = Cart.objects.create(user=request.user)
     return render(request, 'ecommerce_app/cart.html', {'cart': cart})
-@login_required
+
 @login_required
 def add_to_cart(request, product_id):
     cart = Cart.objects.filter(user=request.user, is_active=True).first()
@@ -119,6 +131,7 @@ def checkout(request):
         'cart': cart,
         'form': form,
     })
+
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -157,5 +170,3 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('index')
-
-# Create your views here.
