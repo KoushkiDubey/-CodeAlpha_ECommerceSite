@@ -9,9 +9,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-development-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Force debug mode
-ALLOWED_HOSTS = ['*']  # Allow all hosts during testing
 
+# Dynamically set DEBUG and ALLOWED_HOSTS based on environment
+if os.environ.get('PYTHONANYWHERE_DOMAIN'):
+    # Production settings (PythonAnywhere)
+    DEBUG = False
+    ALLOWED_HOSTS = ['codealpha.pythonanywhere.com']
+else:
+    # Local development settings
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,6 +38,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
