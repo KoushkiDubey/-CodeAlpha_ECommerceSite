@@ -105,6 +105,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Local development
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    # Production (Render)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
