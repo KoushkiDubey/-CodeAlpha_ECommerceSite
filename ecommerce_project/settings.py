@@ -28,6 +28,21 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 ]
 
+# Database
+
+# Database Configuration
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///' + str(Path(__file__).parent.parent / 'db.sqlite3'),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
+SECRET_KEY = os.environ.get('SECRET_KEY')  # From Render env vars
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # False in production
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')  # Your Render URL
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
@@ -63,22 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database
-if os.environ.get('RENDER'):
-    DATABASES = {
-        'default': dj_database_url.config(
-            conn_max_age=600,
-            ssl_require=True,
-            engine='django.db.backends.postgresql'
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
