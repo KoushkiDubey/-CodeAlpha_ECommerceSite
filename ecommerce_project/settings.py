@@ -9,18 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-development-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'  # False in production
 
-# Dynamically set DEBUG and ALLOWED_HOSTS based on environment
-if os.environ.get('PYTHONANYWHERE_DOMAIN'):
-    # Production settings (PythonAnywhere)
-    DEBUG = False
-    ALLOWED_HOSTS = ['codealpha-ecommercesite-3.onrender.com',  # Your Render.com URL
-                     'localhost',
-                     '127.0.0.1',]
-else:
-    # Local development settings
-    DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Dynamically set ALLOWED_HOSTS
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+if os.environ.get('RENDER'):
+    ALLOWED_HOSTS.append('codealpha-ecommercesite-3.onrender.com')  # Your Render URL
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,12 +30,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -110,13 +104,16 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Your existing folder
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Local development
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    # Production (Render)
 
-# Media files
+# Media files (user uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Whitenoise static files storage (for production)
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
