@@ -130,17 +130,3 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # AUTO-MIGRATE ON RENDER (FIX FOR UNDEFINEDTABLE ERROR)
 # Replace the previous auto-migrate code with this:
-
-if os.environ.get('RENDER'):
-    import sys
-    from django.db.utils import ProgrammingError
-    from django.core.management import call_command
-
-    try:
-        # Try to access any model to check if tables exist
-        from django.apps import apps
-        Product = apps.get_model('ecommerce_app', 'Product')
-        Product.objects.exists()  # Simple query to test table
-    except (ProgrammingError, LookupError):
-        print('🛠️  Database tables missing! Running migrations...', file=sys.stderr)
-        call_command('migrate', '--noinput')
