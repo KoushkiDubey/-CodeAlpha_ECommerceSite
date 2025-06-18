@@ -1,5 +1,5 @@
 # fly.toml
-app = "codealpha_ecommerce_123"  # Change this (e.g., "my-django-shop")
+app = "codealpha-ecommerce-123"  # Change this (e.g., "my-django-shop")
 primary_region = "iad"  # Virginia (fastest free tier)
 
 [build]
