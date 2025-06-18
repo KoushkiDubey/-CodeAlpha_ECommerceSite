@@ -1,20 +1,16 @@
 import os
 from pathlib import Path
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-development-key')
+SECRET_KEY = 'django-insecure-development-key'  # Replace with your local key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True' # False in production
+DEBUG = True
 
-# Dynamically set ALLOWED_HOSTS
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-if os.environ.get('RENDER'):
-    ALLOWED_HOSTS.append('codealpha-ecommercesite-3.onrender.com')  # Your Render URL
 
 # Application definition
 INSTALLED_APPS = [
@@ -28,24 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 ]
 
-# Database
-
-# Database Configuration
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(Path(__file__).parent.parent / 'db.sqlite3'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
-SECRET_KEY = os.environ.get('SECRET_KEY')  # From Render env vars
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # False in production
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')  # Your Render URL
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,6 +58,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -103,22 +90,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Local development
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')    # Production (Render)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files (user uploads)
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Whitenoise static files storage (for production)
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login settings
+# Auth settings
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
@@ -126,7 +108,3 @@ LOGOUT_REDIRECT_URL = 'index'
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 SESSION_SAVE_EVERY_REQUEST = True
-# settings.py (add this at the very end)
-
-# AUTO-MIGRATE ON RENDER (FIX FOR UNDEFINEDTABLE ERROR)
-# Replace the previous auto-migrate code with this:
