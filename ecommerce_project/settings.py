@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-import dj_database_url
+import dj_database_url  # For production database config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-development-key'  # Replace with your local key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # Will be overridden in production
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,9 +64,19 @@ WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3'),  # str() fixes IntelliJ warning
     }
 }
+
+# Production configuration (Auto-detected on Cyclic.sh)
+if os.environ.get('CYCLIC_DB_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True
+    )
+    DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = [f'https://{os.environ.get("CYCLIC_APP_NAME", "")}.cyclic.app']
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -93,6 +104,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -109,16 +121,3 @@ LOGOUT_REDIRECT_URL = 'index'
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 SESSION_SAVE_EVERY_REQUEST = True
-# Detect Fly.io environment (won't affect local)
-if os.environ.get('FLY_APP_NAME'):
-    DEBUG = False
-    ALLOWED_HOSTS = ['your-app-name.fly.dev']  # Match fly.toml "app" name
-    CSRF_TRUSTED_ORIGINS = ['https://your-app-name.fly.dev']
-    DATABASES = {
-        'default': dj_database_url.config(
-            default='postgres://postgres:password@localhost:5432',
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
