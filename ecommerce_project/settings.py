@@ -7,11 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key secret (set in env var)!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-only')
 
-# SECURITY WARNING: disable debug in production!
-DEBUG = False
 
-# Add your PythonAnywhere hostname + local testing hosts
-ALLOWED_HOSTS = ['koushki.pythonanywhere.com', 'localhost', '127.0.0.1']
+if 'pythonanywhere' in os.environ.get('HOME', ''):
+    DEBUG = False
+    ALLOWED_HOSTS = ['koushki.pythonanywhere.com','localhost', '127.0.0.1']
+else:
+    DEBUG = True  # Local development
+    ALLOWED_HOSTS = []
+
+
 
 # Application definition
 INSTALLED_APPS = [
