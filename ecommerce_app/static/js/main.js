@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Add to cart functionality
+  
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
             let quantity = 1;
 
-            // Check if quantity input exists (on product detail page)
+          
             const quantityInput = document.getElementById('quantity');
             if (quantityInput) {
                 quantity = parseInt(quantityInput.value);
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Remove item from cart
+    
     document.querySelectorAll('.remove-item').forEach(button => {
         button.addEventListener('click', function() {
             const itemId = this.getAttribute('data-item-id');
@@ -51,12 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Remove the row from the table
+                  
                     this.closest('tr').remove();
                     updateCartCount(data.cart_item_count);
                     showToast('Product removed from cart');
 
-                    // Reload if cart is empty
                     if (data.cart_item_count === 0) {
                         setTimeout(() => {
                             window.location.reload();
@@ -70,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Update cart item quantity
     document.querySelectorAll('.quantity-input').forEach(input => {
         input.addEventListener('change', function() {
             const form = this.closest('form');
@@ -90,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload(); // Refresh to update totals
+                    window.location.reload(); 
                 }
             })
             .catch(error => {
@@ -99,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Helper function to get CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -115,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
 
-    // Update cart count in navbar
+ 
     function updateCartCount(count) {
         const cartCountElements = document.querySelectorAll('.cart-count');
         cartCountElements.forEach(element => {
@@ -123,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Show toast notification
+
     function showToast(message) {
         // Create toast element
         const toast = document.createElement('div');
@@ -142,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         document.body.appendChild(toast);
-        // Prevent jQuery from conflicting with Bootstrap
+       
         if (typeof jQuery !== 'undefined') {
             jQuery.noConflict();
         }
