@@ -54,18 +54,17 @@ def view_cart(request):
 
     return render(request, 'ecommerce_app/cart.html', {
         'cart': cart,
-        'cart_items': cart.items.all()  # Use the correct related_name
+        'cart_items': cart.items.all()  
     })
 @login_required
 def add_to_cart(request, product_id):
-    # Get or create active cart (reactivates old cart if exists)
+   
     cart, created = Cart.objects.get_or_create(
         user=request.user,
         is_active=True,
         defaults={'is_active': True}
     )
 
-    # If cart was inactive (from previous order), reactivate it
     if not created and not cart.is_active:
         cart.is_active = True
         cart.save()
