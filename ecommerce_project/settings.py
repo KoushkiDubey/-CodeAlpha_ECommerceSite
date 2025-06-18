@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -108,3 +109,16 @@ LOGOUT_REDIRECT_URL = 'index'
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 1 day in seconds
 SESSION_SAVE_EVERY_REQUEST = True
+# Detect Fly.io environment (won't affect local)
+if os.environ.get('FLY_APP_NAME'):
+    DEBUG = False
+    ALLOWED_HOSTS = ['your-app-name.fly.dev']  # Match fly.toml "app" name
+    CSRF_TRUSTED_ORIGINS = ['https://your-app-name.fly.dev']
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgres://postgres:password@localhost:5432',
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
