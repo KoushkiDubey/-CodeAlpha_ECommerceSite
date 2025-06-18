@@ -1,17 +1,17 @@
 import os
 from pathlib import Path
-import dj_database_url  # For production database config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-development-key'  # Replace with your local key
+# SECURITY WARNING: keep the secret key secret (set in env var)!
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-only')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Will be overridden in production
+# SECURITY WARNING: disable debug in production!
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Add your PythonAnywhere hostname + local testing hosts
+ALLOWED_HOSTS = ['koushki.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',  # Add this
     'django.contrib.staticfiles',
     'ecommerce_app',
     'django.contrib.humanize',
@@ -27,7 +28,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,23 +61,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
-# Database
+# Database (SQLite for PythonAnywhere free tier)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),  # str() fixes IntelliJ warning
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Production configuration (Auto-detected on Cyclic.sh)
-if os.environ.get('CYCLIC_DB_URL'):
-    DATABASES['default'] = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=True
-    )
-    DEBUG = False
-    ALLOWED_HOSTS = ['*']
-    CSRF_TRUSTED_ORIGINS = [f'https://{os.environ.get("CYCLIC_APP_NAME", "")}.cyclic.app']
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -102,9 +93,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Your custom static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # Collected static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # Add this
 
 # Media files
 MEDIA_URL = '/media/'
